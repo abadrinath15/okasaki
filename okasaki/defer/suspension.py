@@ -54,5 +54,6 @@ def force(maybe_dfr: Suspension[T] | Any) -> T | Any:
                 *map(force, maybe_dfr.args),
                 **{key: force(value) for key, value in maybe_dfr.kwargs.items()},
             )
+
         case __:
             return maybe_dfr

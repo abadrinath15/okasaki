@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable, Any, Generic, TypeVar, cast, overload
 
@@ -8,7 +9,7 @@ T = TypeVar("T")
 class Suspension(Generic[T]):
     # These are all likely unsafe since mutation could occur...
     func: Callable[..., T]
-    args: tuple[Any]
+    args: tuple[Any, ...]
     kwargs: dict[str, Any]
 
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Any, Generic, TypeVar
+from typing import Generic, TypeVar
 from okasaki.defer.suspension import Suspension, force, delay
 
 T = TypeVar("T")
@@ -22,7 +22,8 @@ def cons(car: T, cdr: Stream[T]) -> _StreamCell[T]:
     return _StreamCell(car, cdr)
 
 
-def _take(n: int, s: Stream[T]) -> StreamCell[T]:
+@delay
+def take(n: int, s: Stream[T]) -> Stream[T]:
     # Avoiding forcing s when n == 0
     if n == 0:
         return None
@@ -32,21 +33,14 @@ def _take(n: int, s: Stream[T]) -> StreamCell[T]:
             return None
 
         case _StreamCell(car, cdr):
-            return cons(car, _take(n - 1, cdr))
+            return cons(car, take(n - 1, cdr))
 
 
-def take(n: int, s: Stream[T]) -> Stream[T]:
-    return delay(_take, n, s)
-
-
-def _append(s: Stream[T], t: Stream[T]) -> StreamCell[T]:
+@delay
+def append(s: Stream[T], t: Stream[T]) -> Stream[T]:
     match force(s):
         case None:
             return force(t)
 
         case _StreamCell(car, cdr):
-            return cons(car, _append(cdr, t))
-
-
-def append(s: Stream[T], t: Stream[T]) -> Stream[T]:
-    return delay(_append, s, t)
+            return cons(car, append(cdr, t))

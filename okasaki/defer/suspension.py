@@ -1,29 +1,35 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Callable, Any, Generic, TypeVar, cast, overload
+from typing import Callable, Any, Generic, TypeVar, cast, overload, ParamSpec
+from functools import wraps
 
 T = TypeVar("T")
+P = ParamSpec("P")
 
 
 @dataclass
 class Suspension(Generic[T]):
     # These are all likely unsafe since mutation could occur...
-    func: Callable[..., T]
+    f: Callable[..., T]
     args: tuple[Any, ...]
     kwargs: dict[str, Any]
 
 
-def delay(func: Callable[..., T], *args: Any, **kwargs: Any) -> Suspension[T]:
+def delay(f: Callable[P, T]):
     """Delay is pretty straightforward. Well kinda. Python allows mutations so that will have to be a concept to be
     explored at a later time
-
-    Args:
-        func (Callable[..., T]): _description_
-
-    Returns:
-        Suspension[T]: _description_
     """
-    return Suspension(func, args, kwargs)
+
+    @wraps(f)
+    def inner(*args: P.args, **kwargs: P.kwargs) -> Suspension[T]:
+        return Suspension(f, args, kwargs)
+
+    return inner
+
+
+def delay_literal(lit: T) -> Suspension[T]:
+    """Sometimes we need to delay literals. This is a helper for that"""
+    return Suspension(lambda: lit, (), {})
 
 
 @overload
@@ -50,9 +56,7 @@ def force(maybe_dfr: Suspension[T] | Any) -> T | Any:
     match maybe_dfr:
         case Suspension():
             maybe_dfr = cast(Suspension[T], maybe_dfr)
-            return maybe_dfr.func(
-                *map(force, maybe_dfr.args),
-                **{key: force(value) for key, value in maybe_dfr.kwargs.items()},
-            )
+            return maybe_dfr.f(*maybe_dfr.args, **maybe_dfr.kwargs)
+
         case __:
             return maybe_dfr

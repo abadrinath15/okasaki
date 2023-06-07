@@ -8,7 +8,7 @@ def trivial(x: int, y: int = 3) -> int:
 def test_delay() -> None:
     args = (2, 5)
     kwargs = {"y": 3}
-    susp = suspension.delay(trivial, *args, **kwargs)
+    susp = suspension.delay(trivial)(*args, **kwargs)
     assert susp == suspension.Suspension(trivial, args, kwargs)
 
 
@@ -21,8 +21,3 @@ class TestForce:
 
     def test_not_suspension(self) -> None:
         assert suspension.force(2) == 2
-
-    def test_nested_suspension(self) -> None:
-        susp1 = suspension.Suspension(trivial, (1,), {})
-        susp2 = suspension.Suspension(trivial, (susp1,), {"y": 5})
-        assert suspension.force(susp2) == 9

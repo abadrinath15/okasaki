@@ -44,7 +44,8 @@ def force(maybe_dfr: Any) -> Any:
 
 def force(maybe_dfr: Suspension[T] | Any) -> T | Any:
     """Force seemed like a trivial eval, but it's really not:
-        - Since the args and kwargs can theoretically _also_ be deferrals themselves, you have this need to recurse. That isn't bad.
+        - Since the args and kwargs can theoretically _also_ be deferrals themselves, you have this need to recurse.
+        That isn't bad.
         - The memoization? Uh. How the heck am I gonna do that? Do I do some kind of decorator with a cache?
 
     Args:

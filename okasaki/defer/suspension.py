@@ -27,6 +27,11 @@ def delay(f: Callable[P, T]):
     return inner
 
 
+def delay_literal(lit: T) -> Suspension[T]:
+    """Sometimes we need to delay literals. This is a helper for that"""
+    return Suspension(lambda: lit, (), {})
+
+
 @overload
 def force(maybe_dfr: Suspension[T]) -> T:
     ...
@@ -51,10 +56,7 @@ def force(maybe_dfr: Suspension[T] | Any) -> T | Any:
     match maybe_dfr:
         case Suspension():
             maybe_dfr = cast(Suspension[T], maybe_dfr)
-            return maybe_dfr.f(
-                *map(force, maybe_dfr.args),
-                **{key: force(value) for key, value in maybe_dfr.kwargs.items()},
-            )
+            return maybe_dfr.f(*maybe_dfr.args, **maybe_dfr.kwargs)
 
         case __:
             return maybe_dfr

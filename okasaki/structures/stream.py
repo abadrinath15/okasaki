@@ -12,6 +12,11 @@ class _StreamCell(Generic[T]):
     cdr: Stream[T]
 
 
+@delay
+def cons(car: T, cdr: Stream[T]) -> StreamCell[T]:
+    return _StreamCell(car, cdr)
+
+
 StreamCell = _StreamCell[T] | None
 
 
@@ -29,7 +34,7 @@ def take(n: int, s: Stream[T]) -> StreamCell[T]:
             return None
 
         case _StreamCell(car, cdr):
-            return _StreamCell(car, take(n - 1, cdr))
+            return _StreamCell(car, force(take(n - 1, cdr)))
 
 
 @delay
@@ -40,3 +45,19 @@ def append(s: Stream[T], t: Stream[T]) -> StreamCell[T]:
 
         case _StreamCell(car, cdr):
             return _StreamCell(car, append(cdr, t))
+
+
+def equals(s: Stream[T], t: Stream[T]) -> bool:
+    while True:
+        match force(s), force(t):
+            case None, None:
+                return True
+
+            case (__, None) | (None, __):
+                return False
+
+            case _StreamCell(s_car, s_cdr), _StreamCell(t_car, t_cdr):
+                if s_car != t_car:
+                    return False
+
+                s, t = s_cdr, t_cdr

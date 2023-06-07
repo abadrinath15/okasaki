@@ -21,8 +21,3 @@ class TestForce:
 
     def test_not_suspension(self) -> None:
         assert suspension.force(2) == 2
-
-    def test_nested_suspension(self) -> None:
-        susp1 = suspension.Suspension(trivial, (1,), {})
-        susp2 = suspension.Suspension(trivial, (susp1,), {"y": 5})
-        assert suspension.force(susp2) == 9

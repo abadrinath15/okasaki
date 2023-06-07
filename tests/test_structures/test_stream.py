@@ -1,19 +1,27 @@
-from okasaki.structures.stream import take, cons, equals, append
+from okasaki.structures import stream
 from okasaki.defer import delay_literal, force
 
-S = cons(1, cons(2, cons(3, delay_literal(None))))
-T = cons(4, cons(5, cons(6, delay_literal(None))))
+S = stream.cons(1, stream.cons(2, stream.cons(3, delay_literal(None))))
+T = stream.cons(4, stream.cons(5, stream.cons(6, delay_literal(None))))
 
 
 def test_take() -> None:
-    assert force(take(0, T)) is None
-    res = take(2, S)
-    ex = cons(1, cons(2, delay_literal(None)))
-    assert equals(res, ex)
+    assert force(stream.take(0, T)) is None
+    res = stream.take(2, S)
+    ex = stream.cons(1, stream.cons(2, delay_literal(None)))
+    assert stream.equals(res, ex)
 
 
 def test_append() -> None:
-    assert equals(append(delay_literal(None), T), T)
-    ex = cons(1, cons(2, cons(3, cons(4, cons(5, cons(6, delay_literal(None)))))))
-    res = append(S, T)
-    assert equals(res, ex)
+    assert stream.equals(stream.append(delay_literal(None), T), T)
+    ex = stream.cons(
+        1,
+        stream.cons(
+            2,
+            stream.cons(
+                3, stream.cons(4, stream.cons(5, stream.cons(6, delay_literal(None))))
+            ),
+        ),
+    )
+    res = stream.append(S, T)
+    assert stream.equals(res, ex)

@@ -15,7 +15,7 @@ class Suspension(Generic[T]):
     kwargs: dict[str, Any]
 
 
-def delay(f: Callable[P, T]):
+def delay(f: Callable[P, T]) -> Callable[P, Suspension[T]]:
     """Delay is pretty straightforward. Well kinda. Python allows mutations so that will have to be a concept to be
     explored at a later time
     """

@@ -47,11 +47,11 @@ def append(s: Stream[T], t: Stream[T]) -> StreamCell[T]:
             return _StreamCell(car, append(cdr, t))
 
 
-def _drop(n: int, s: Stream[T]) -> Stream[T]:
-    if n == 0:
-        return force(s)
+def _drop(n: int, s: Stream[T]) -> StreamCell[T]:
+    match n, (fs := force(s)):
+        case 0, _:
+            return fs
 
-    match n, s:
         case _, None:
             return None
 
@@ -60,7 +60,7 @@ def _drop(n: int, s: Stream[T]) -> Stream[T]:
 
 
 @delay
-def drop(n: int, s: Stream[T]) -> Stream[T]:
+def drop(n: int, s: Stream[T]) -> StreamCell[T]:
     return _drop(n, s)
 
 

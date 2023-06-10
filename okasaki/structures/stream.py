@@ -64,6 +64,20 @@ def drop(n: int, s: Stream[T]) -> StreamCell[T]:
     return _drop(n, s)
 
 
+def _reverse(s: Stream[T], r: StreamCell[T]) -> StreamCell[T]:
+    match force(s), r:
+        case None, _:
+            return r
+
+        case _StreamCell(car, cdr), __:
+            return _reverse(cdr, _StreamCell(car, cons(car, Suspension(_StreamCell, (car, cdr), {}))))
+
+
+@delay
+def reverse(s: Stream[T]) -> StreamCell[T]:
+    return _reverse(s, None)
+
+
 def equals(s: Stream[T], t: Stream[T]) -> bool:
     while True:
         match force(s), force(t):

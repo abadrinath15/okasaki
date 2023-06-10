@@ -18,9 +18,7 @@ def test_append() -> None:
         1,
         stream.cons(
             2,
-            stream.cons(
-                3, stream.cons(4, stream.cons(5, stream.cons(6, delay_literal(None))))
-            ),
+            stream.cons(3, stream.cons(4, stream.cons(5, stream.cons(6, delay_literal(None))))),
         ),
     )
     res = stream.append(S, T)
